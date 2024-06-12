@@ -1,5 +1,6 @@
-FROM golang:latest
+FROM golang:1.22.4-alpine3.20
 LABEL maintainer="Raphael Ebner"
+LABEL org.opencontainers.image.source="https://github.com/OSS-App-Forks/traefik-ssl-certificate-exporter"
 WORKDIR /app
 
 # Retrieve application dependencies.
@@ -13,8 +14,9 @@ COPY . ./
 RUN go build
 
 
-FROM debian:latest
+FROM alpine:3.20
 LABEL maintainer="Raphael Ebner"
+LABEL org.opencontainers.image.source="https://github.com/OSS-App-Forks/traefik-ssl-certificate-exporter"
 WORKDIR /app
 
 ENV CRON_TIME="* * * * *"
@@ -23,7 +25,7 @@ ENV CERT_GROUP_ID="0"
 ENV ON_START=1
 
 COPY --from=0 /app/traefik-ssl-certificate-exporter ./
-RUN apt-get update && apt-get install -y cron
+RUN apk update && apk add bash
 COPY entrypoint.sh ./
 RUN chmod +x ./entrypoint.sh
 
